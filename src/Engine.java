@@ -1,25 +1,70 @@
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Engine {
     // generally works
-    private static ArrayList<Double> calculateDistance(ArrayList<Vector> vectors, Vector testVector) {
-        ArrayList<Double> distances = new ArrayList<>();
+    private static ArrayList<Pair> calculateDistance(ArrayList<Vector> trainingVectors, Vector testVector) {
+        ArrayList<Pair> distances = new ArrayList<>();
 
-        for (Vector vector : vectors) {
+        for (Vector vector : trainingVectors) {
             double distance = 0;
 
             for (int i = 0; i < testVector.components.length; i++)
                 distance += Math.pow(vector.components[i] - testVector.components[i], 2);
 
-            distances.add(Math.sqrt(distance));
+            distances.add(new Pair(vector, distance));
         }
 
         return distances;
     }
 
-    private static void evalClassNames() {
+    private static String getTopClassName(TrainingSet trainingSet, ArrayList<Vector> kClosest) {
+        // initialize the map
+        HashMap<String, Integer> classesCount = new HashMap<>();
+        for (String className : trainingSet.getClasses()) classesCount.put(className, 0);
 
+        // count the number of occurrences for each class
+        for (Vector closestVector : kClosest) {
+            int count = classesCount.get(closestVector.className);
+            classesCount.put(closestVector.className, ++count);
+        }
+
+        // find the name of the class with maximum occurrences
+        String className = "";
+        int count = 0;
+        for (String key : classesCount.keySet()) {
+            if (count < classesCount.get(key)) {
+                className = key;
+                count = classesCount.get(key);
+            }
+        }
+        return className;
+    }
+
+    private static void evalSingleVector(int k, TrainingSet trainingSet, Vector testVector) {
+        ArrayList<Vector> trainingVectors = trainingSet.getTrainingVectors();
+
+        // getting the distances
+        ArrayList<Pair> distances = calculateDistance(trainingVectors, testVector);
+
+        // choosing k of the closest
+        distances.sort(Comparator.comparingDouble(pair -> pair.distance));
+        ArrayList<Vector> kClosest = new ArrayList<>();
+        for (int i = 0; i < k; i++) kClosest.add(distances.get(i).vector);
+
+        String className = getTopClassName(trainingSet, kClosest);
+
+        // assign the name
+        testVector.setClassName(className);
+    }
+
+    // evaluate (and store inside the Vectors) classes for the testingSet
+    private static void evalTestingSet(int k, TrainingSet trainingSet, TestingSet testingSet) {
+        ArrayList<Vector> testingVectors = testingSet.getTestingVectors();
+
+        for (Vector vector : testingVectors) evalSingleVector(k, trainingSet, vector);
     }
 
     private double evalPrecision() {
@@ -31,36 +76,14 @@ public class Engine {
         System.out.print("Enter k: ");
         int k = sc.nextInt();
 
-        /*ArrayList<Vector> vectors = new ArrayList<>();
+        TrainingSet trainingSet = new TrainingSet("./src/data/iris.data");
+        TestingSet testingSet = new TestingSet("./src/data/iris.test.data");
 
-        Vector testVector = new Vector(new double[]{5.0, 3.2, 1.2, 0.2});
+//        TrainingSet trainingSet = new TrainingSet("./src/data/wdbc.data");
+//        TestingSet testingSet = new TestingSet("./src/data/wdbc.test.data");
 
-        Vector vector1 = new Vector(new double[]{5.1,3.5,1.4,0.2});
-        Vector vector2 = new Vector(new double[]{4.9,3.0,1.4,0.2});
-        Vector vector3 = new Vector(new double[]{4.7,3.2,1.3,0.2});
-        Vector vector4 = new Vector(new double[]{4.6,3.1,1.5,0.2});
-        Vector vector5 = new Vector(new double[]{5.0,3.6,1.4,0.2});
-
-        vectors.add(vector1);
-        vectors.add(vector2);
-        vectors.add(vector3);
-        vectors.add(vector4);
-        vectors.add(vector5);
-
-        System.out.println(calculateDistance(vectors, testVector));
-
-        VectorSet trainingSet = new VectorSet("./src/wdbc.data");
-        System.out.println(trainingSet.vectors.toString());
-        System.out.println(trainingSet.classes.toString());
-        System.out.println(trainingSet.NUMBER_OF_CLASSES);
-
-        System.out.println();
-
-        VectorSet testSet = new VectorSet("./src/iris.test.data");
-        System.out.println(testSet.vectors.toString());
-        System.out.println(testSet.classes.toString());
-        System.out.println(testSet.NUMBER_OF_CLASSES);*/
-
-
+        System.out.println(testingSet.getTestingVectors());
+        evalTestingSet(k, trainingSet, testingSet);
+        System.out.println(testingSet.getTestingVectors());
     }
 }

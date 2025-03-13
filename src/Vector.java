@@ -14,6 +14,10 @@ public class Vector {
         this.className = "";
     }
 
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
     @Override
     public String toString() {
         return "Vector{" +

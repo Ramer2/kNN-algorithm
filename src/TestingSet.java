@@ -57,7 +57,7 @@ public class TestingSet {
         return fileName;
     }
 
-    public ArrayList<Vector> getVectors() {
+    public ArrayList<Vector> getTestingVectors() {
         return testingVectors;
     }
 
