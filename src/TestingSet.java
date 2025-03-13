@@ -68,4 +68,8 @@ public class TestingSet {
     public int getNUMBER_OF_CLASSES() {
         return NUMBER_OF_CLASSES;
     }
+
+    public ArrayList<String> getTestingSetClassNames() {
+        return testingSetClassNames;
+    }
 }

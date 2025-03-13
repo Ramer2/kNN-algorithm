@@ -67,8 +67,17 @@ public class Engine {
         for (Vector vector : testingVectors) evalSingleVector(k, trainingSet, vector);
     }
 
-    private double evalPrecision() {
-        return 0;
+    private static String evalPrecision(TestingSet testingSet) {
+        int total = testingSet.getTestingVectors().size();
+        int correct = 0;
+
+        for (int i = 0; i < total; i++) {
+            if (testingSet.getTestingVectors().get(i).className
+                    .equals(testingSet.getTestingSetClassNames().get(i))) correct++;
+        }
+
+        double accuracy = ((double) correct / total) * 100;
+        return String.format("Accuracy: %.2f%%", accuracy);
     }
 
     public static void main(String[] args) {
@@ -76,14 +85,13 @@ public class Engine {
         System.out.print("Enter k: ");
         int k = sc.nextInt();
 
-        TrainingSet trainingSet = new TrainingSet("./src/data/iris.data");
-        TestingSet testingSet = new TestingSet("./src/data/iris.test.data");
+//        TrainingSet trainingSet = new TrainingSet("./src/data/iris.data");
+//        TestingSet testingSet = new TestingSet("./src/data/iris.test.data");
 
-//        TrainingSet trainingSet = new TrainingSet("./src/data/wdbc.data");
-//        TestingSet testingSet = new TestingSet("./src/data/wdbc.test.data");
+        TrainingSet trainingSet = new TrainingSet("./src/data/wdbc.data");
+        TestingSet testingSet = new TestingSet("./src/data/wdbc.test.data");
 
-        System.out.println(testingSet.getTestingVectors());
         evalTestingSet(k, trainingSet, testingSet);
-        System.out.println(testingSet.getTestingVectors());
+        System.out.println(evalPrecision(testingSet));
     }
 }
