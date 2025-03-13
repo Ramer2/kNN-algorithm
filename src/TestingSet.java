@@ -11,14 +11,12 @@ public class TestingSet {
     ArrayList<Vector> testingVectors;
     ArrayList<String> testingSetClassNames;
     ArrayList<String> classes;
-    int NUMBER_OF_CLASSES;
 
     public TestingSet(String fileName) {
         this.fileName = fileName;
         testingVectors = new ArrayList<>();
         testingSetClassNames = new ArrayList<>();
         classes = new ArrayList<>();
-        NUMBER_OF_CLASSES = 0;
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -35,10 +33,7 @@ public class TestingSet {
 
                 // class
                 String className = parts[parts.length - 1];
-                if (!classes.contains(className)) {
-                    classes.add(className);
-                    NUMBER_OF_CLASSES++;
-                }
+                if (!classes.contains(className)) classes.add(className);
 
                 testingVectors.add(new Vector(components));
                 testingSetClassNames.add(className);
@@ -53,23 +48,16 @@ public class TestingSet {
         }
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
     public ArrayList<Vector> getTestingVectors() {
         return testingVectors;
     }
 
-    public ArrayList<String> getClasses() {
-        return classes;
-    }
-
-    public int getNUMBER_OF_CLASSES() {
-        return NUMBER_OF_CLASSES;
-    }
-
     public ArrayList<String> getTestingSetClassNames() {
         return testingSetClassNames;
+    }
+
+    // resets the testing set
+    public void reset() {
+        for (Vector vector : testingVectors) vector.setClassName("");
     }
 }

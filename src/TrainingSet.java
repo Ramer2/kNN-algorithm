@@ -10,13 +10,11 @@ public class TrainingSet {
 
     ArrayList<Vector> trainingVectors;
     ArrayList<String> classes;
-    int NUMBER_OF_CLASSES;
 
     public TrainingSet(String fileName) {
         this.fileName = fileName;
         trainingVectors = new ArrayList<>();
         classes = new ArrayList<>();
-        NUMBER_OF_CLASSES = 0;
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -33,10 +31,7 @@ public class TrainingSet {
 
                 // class
                 String className = parts[parts.length - 1];
-                if (!classes.contains(className)) {
-                    classes.add(className);
-                    NUMBER_OF_CLASSES++;
-                }
+                if (!classes.contains(className)) classes.add(className);
 
                 trainingVectors.add(new Vector(components, className));
             }
@@ -50,19 +45,11 @@ public class TrainingSet {
         }
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
     public ArrayList<Vector> getTrainingVectors() {
         return trainingVectors;
     }
 
     public ArrayList<String> getClasses() {
         return classes;
-    }
-
-    public int getNUMBER_OF_CLASSES() {
-        return NUMBER_OF_CLASSES;
     }
 }
