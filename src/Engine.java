@@ -82,11 +82,8 @@ public class Engine {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        TrainingSet trainingSet = new TrainingSet("./src/data/iris.data");
-        TestingSet testingSet = new TestingSet("./src/data/iris.test.data");
-
-//        TrainingSet trainingSet = new TrainingSet("./src/data/wdbc.data");
-//        TestingSet testingSet = new TestingSet("./src/data/wdbc.test.data");
+        TrainingSet trainingSet;
+        TestingSet testingSet;
 
         System.out.println("In case of updating the sets, please, restart the program.");
         System.out.println("You can type \"exit\" anytime to exit the program.");
@@ -96,9 +93,9 @@ public class Engine {
             System.out.print("Would you like to use the automatically calculated k value? (Y/N): ");
             String input = sc.nextLine();
             if (input.equalsIgnoreCase("Y")) {
-                k = (int) Math.sqrt(trainingSet.getTrainingVectors().size());
+                k = -1;
             } else if (input.equalsIgnoreCase("N")) {
-                System.out.print("In this case please input your k value: ");
+                System.out.print("In this case please input your natural k value: ");
                 k = sc.nextInt();
                 sc.nextLine();
             } else if (input.equalsIgnoreCase("exit")) return;
@@ -107,14 +104,23 @@ public class Engine {
                 break;
             }
 
+            System.out.print("Now please enter the name of the file containing your training set: ");
+            input = sc.nextLine();
+            trainingSet = new TrainingSet("./src/data/" + input);
+
+            if (k == -1) k = (int) Math.sqrt(trainingSet.getTrainingVectors().size());
+
             System.out.print("Would you like to run the testing set? (Y/N): ");
             input = sc.nextLine();
 
             if (input.equalsIgnoreCase("Y")) {
+                System.out.print("In this case please enter the name of the file containing your testing set: ");
+                input = sc.nextLine();
+                testingSet = new TestingSet("./src/data/" + input);
                 evalTestingSet(k, trainingSet, testingSet);
                 System.out.println(evalPrecision(testingSet));
-
                 testingSet.reset();
+
             } else if (input.equalsIgnoreCase("N")) {
                 System.out.print("In this case input your single test vector in format (x1,x2,x3...,xn,className): ");
                 input = sc.nextLine();
@@ -126,7 +132,7 @@ public class Engine {
                 String className = parts[parts.length - 1];
 
                 // checks
-                if (components.length != testingSet.getTestingVectors().getFirst().components.length) {
+                if (components.length != trainingSet.getTrainingVectors().getFirst().components.length) {
                     System.out.println("Looks like you entered less values than in the training set. Please, start over.");
                     break;
                 }
@@ -137,14 +143,12 @@ public class Engine {
                 } else {
                     System.out.println("The test vector's classname is different (" + testVector.className + ") than the one given (" + className + ").");
                 }
-
             } else if (input.equalsIgnoreCase("exit")) return;
             else {
                 System.out.println("Unexpected input.");
                 break;
             }
 
-            testingSet.reset(); // reset every time
             System.out.println();
         }
     }
