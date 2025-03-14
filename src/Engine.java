@@ -117,6 +117,12 @@ public class Engine {
                 System.out.print("In this case please enter the name of the file containing your testing set: ");
                 input = sc.nextLine();
                 testingSet = new TestingSet("./src/data/" + input);
+
+                if (testingSet.testingVectors.getFirst().components.length != trainingSet.getTrainingVectors().getFirst().components.length) {
+                    System.out.println("The testing vectors do not match (different number of components).\n");
+                    continue;
+                }
+
                 evalTestingSet(k, trainingSet, testingSet);
                 System.out.println(evalPrecision(testingSet));
                 testingSet.reset();
